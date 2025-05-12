@@ -17,7 +17,7 @@ const Container = styled.div`
 
 const SceneWrapper = styled.div`
   width: 90vw;
-  height: 85vh;
+  height: 60vh;
   background: #ffffff;
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
   border-radius: 24px;
@@ -25,11 +25,17 @@ const SceneWrapper = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 15px;
+`;
+const SceneWrapper2 = styled.div`
+ justify-content: center;
+ align-items: center;
+ gap: 15px;
 `;
 
 const SceneViewer = styled.div`
   flex: 1;
-  background: #f9f9f9;
+  background:rgb(0, 0, 0);
   border-radius: 20px;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.1);
 `;
@@ -111,12 +117,27 @@ function ColoredModel({ gltfPath, textureIndex }) {
   return <primitive object={gltf.scene} ref={ref} scale={[2.5, 2.5, 2.5]} />;
 }
 
+
+function GLBModel({ path }) {
+  const gltf = useGLTF(path);
+  const ref = useRef();
+
+  useFrame(() => {
+    if (ref.current) ref.current.rotation.y += 0.003;
+  });
+
+  return <primitive ref={ref} object={gltf.scene} scale={[2.5, 2.5, 2.5]} />;
+}
+
+
+
 function App() {
   const [textureIndex, setTextureIndex] = useState(0);
 
   return (
     <Container>
       <Title>Customização do seu instrumento</Title>
+  
       <SceneWrapper>
         <SceneViewer>
           <Canvas camera={{ position: [0, 0, 5] }}>
@@ -126,6 +147,18 @@ function App() {
             <OrbitControls />
           </Canvas>
         </SceneViewer>
+
+
+        <SceneViewer>
+        <Canvas camera={{ position: [0, 0, 5] }}>
+          <ambientLight intensity={0.8} />
+          <directionalLight position={[5, 5, 5]} intensity={1} />
+          <GLBModel path="/GuitarModelMGBass.glb" /> {/* Novo modelo sem textura */}
+          <OrbitControls />
+        </Canvas>
+        </SceneViewer>
+
+       
         <ControlPanel>
           {textureIcons.map((icon, idx) => (
             <TextureButton key={idx} onClick={() => setTextureIndex(idx)}>
@@ -139,5 +172,6 @@ function App() {
 }
 
 useGLTF.preload("/scene.gltf");
+useGLTF.preload("/GuitarModelMGBass.glb");
 export default App;
 
