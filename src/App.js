@@ -1,14 +1,16 @@
-
-
 import React, { useRef, useEffect, useState, useMemo } from "react";
 import { Canvas, useFrame, useLoader } from "@react-three/fiber";
 import { OrbitControls, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
+import { FaStar } from "react-icons/fa";
+import { RatingBox, ReviewButton, DiscountNote } from "./style/style";
+import { FaCommentAlt } from "react-icons/fa";
 import {
   PageWrapper,
   Header,
   Logo,
-  CartIcon,
+  Nav,
+  NavItem,
   SceneLayout,
   LeftPanel,
   RightPanel,
@@ -66,14 +68,13 @@ const textureSets = {
   }
 };
 
-
 function GLBModel({ path, partTextureMap }) {
   const gltf = useGLTF(path);
   const ref = useRef();
   const allTextures = useLoader(THREE.TextureLoader,
     Object.values(textureSets).flatMap(t => [t.map, t.normalMap, t.roughnessMap, t.metalnessMap].filter(Boolean))
   );
-  
+
   const textureLookup = useMemo(() => {
     const lookup = {};
     const keys = Object.keys(textureSets);
@@ -93,11 +94,9 @@ function GLBModel({ path, partTextureMap }) {
   useEffect(() => {
     gltf.scene.traverse(child => {
       if (child.isMesh) {
-        console.log('Mesh name:', child.name);
         const name = child.name.toLowerCase();
-        const isBody = name.startsWith('body') ||
-                       name.includes('centro');
-  
+        const isBody = name.startsWith('body') || name.includes('centro');
+
         if (isBody) {
           const [map, normalMap, roughnessMap] = textureLookup[partTextureMap.body];
           Object.assign(child.material, { map, normalMap, roughnessMap, needsUpdate: true });
@@ -107,8 +106,7 @@ function GLBModel({ path, partTextureMap }) {
         } else if (name.startsWith('fretboard')) {
           const [map, normalMap, roughnessMap] = textureLookup[partTextureMap.neck];
           Object.assign(child.material, { map, normalMap, roughnessMap, needsUpdate: true });
-        }
-        else if (name.startsWith('knok')) {
+        } else if (name.startsWith('knok')) {
           const textures = textureLookup[partTextureMap.knob];
           const [map, normalMap, roughnessMap, metalnessMap] = textures;
           Object.assign(child.material, {
@@ -133,7 +131,7 @@ function GLBModel({ path, partTextureMap }) {
     });
   }, [textureLookup, gltf.scene, partTextureMap]);
 
-  useFrame(() => {});
+  useFrame(() => { });
 
   return <primitive ref={ref} object={gltf.scene} scale={[2.5, 2.5, 2.5]} />;
 }
@@ -141,20 +139,42 @@ function GLBModel({ path, partTextureMap }) {
 function PartSelector({ part, selected, onChange }) {
   return (
     <ColorSelectorContainer>
-    <Label>{part.toUpperCase()}</Label>
-    <ColorOptions>
-      {Object.entries(textureSets)
-        .filter(([_, value]) => value.usage.includes(part))
-        .map(([key, value]) => (
-          <ColorCircle
-            key={key}
-            color={value.color}
-            active={selected === key}
-            onClick={() => onChange(part, key)}
-          />
+      <Label>{part.toUpperCase()}</Label>
+      <ColorOptions>
+        {Object.entries(textureSets)
+          .filter(([_, value]) => value.usage.includes(part))
+          .map(([key, value]) => (
+            <ColorCircle
+              key={key}
+              color={value.color}
+              active={selected === key}
+              onClick={() => onChange(part, key)}
+            />
+          ))}
+      </ColorOptions>
+    </ColorSelectorContainer>
+  );
+}
+
+function Navigation() {
+  const links = [
+    "ABOUT US",
+    "IN STOCK",
+    "MODELS",
+    "BUILD YOUR BASS",
+    "CUSTOM SHOP",
+    "ARTISTS",
+    "PAYMENT PLAN",
+    "VIDEOS",
+    "TESTIMONIALS",
+    "CONTACT"
+  ];
+  return (
+    <Nav>
+      {links.map(link => (
+        <NavItem key={link} active={link === "BUILD YOUR BASS"}>{link}</NavItem>
       ))}
-    </ColorOptions>
-  </ColorSelectorContainer>
+    </Nav>
   );
 }
 
@@ -167,6 +187,7 @@ function App() {
     tarraxa: 'tarraxaMetal'
   });
   const [quantity, setQuantity] = useState(1);
+  const lightRef = useRef();
 
   const handleChange = (part, value) => {
     setPartTextureMap(prev => ({ ...prev, [part]: value }));
@@ -175,15 +196,15 @@ function App() {
   return (
     <PageWrapper>
       <Header>
-        <Logo>MG BASS</Logo>
-        <CartIcon>🛒</CartIcon>
+        <Logo src="/Logo.png" alt="Logo" />
+        <Navigation />
       </Header>
       <SceneLayout>
         <LeftPanel>
           <CanvasContainer>
-            <Canvas camera={{ position: [0, 0, 5] }}>
-              <ambientLight intensity={0.8} />
-              <directionalLight position={[5, 5, 5]} intensity={1} />
+            <Canvas camera={{ position: [0, 0, 7.5] }}>
+              <ambientLight intensity={1.8} />
+              <directionalLight ref={lightRef} position={[1, 9, -5]} intensity={1.5} />
               <GLBModel path="/WaveBird.glb" partTextureMap={partTextureMap} />
               <OrbitControls />
             </Canvas>
@@ -193,17 +214,39 @@ function App() {
         <RightPanel>
           <ProductTitle>WAVEBIRD CUSTOM</ProductTitle>
           <Price>
-            $1,500.00<StrikePrice>$2,500</StrikePrice>
+          <div style={{ display: 'flex', gap: '3px', alignItems: 'center', flexDirection: 'column' }}>
+            $1,500.00
+            <StrikePrice>$2,500</StrikePrice>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexDirection: 'row', marginBottom: '18px' }}>
+              <RatingBox>
+                <FaStar size={14} />
+                4.8
+              </RatingBox>
+
+              <ReviewButton>
+                <FaCommentAlt size={14} />
+                67 Reviews
+              </ReviewButton>
+            </div>
+            
           </Price>
 
+
+
+          <DiscountNote>
+            40% off below<span>, limited time promotion</span>
+          </DiscountNote>
+
           {['body', 'top', 'neck', 'knob', 'tarraxa'].map(part => (
-  <PartSelector
-    key={part}
-    part={part}
-    selected={partTextureMap[part]}
-    onChange={handleChange}
-  />
-))}
+            <PartSelector
+              key={part}
+              part={part}
+              selected={partTextureMap[part]}
+              onChange={handleChange}
+            />
+          ))}
 
           <QuantityWrapper>
             <QuantityBtn onClick={() => setQuantity(q => Math.max(1, q - 1))}>-</QuantityBtn>
