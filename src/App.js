@@ -204,14 +204,16 @@ function App() {
         <LeftPanel>
         
           <CanvasContainer>
-            <Canvas camera={{ position: [0, 0, 7.5] }}>
+            <Canvas camera={{ position: [0, 0, 20] }}>
               <ambientLight intensity={1.8} />
               <directionalLight ref={lightRef} position={[1, 9, -5]} intensity={1.5} />
               <GLBModel path="/WaveBird.glb" partTextureMap={partTextureMap} />
               <OrbitControls />
             </Canvas>
           </CanvasContainer>
+        
           <Logo2 src="/360Icon.png" alt="Logo" />
+       
         </LeftPanel>
 
         <RightPanel>
