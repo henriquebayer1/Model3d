@@ -63,9 +63,7 @@ function GLBModel({ path, partTextureMap }) {
     });
   }, [textureLookup, gltf.scene, partTextureMap]);
 
-  useFrame(() => {
-    if (ref.current) ref.current.rotation.y += 0.003;
-  });
+  useFrame(() => {});
 
   return <primitive ref={ref} object={gltf.scene} scale={[2.5, 2.5, 2.5]} />;
 }
