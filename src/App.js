@@ -9,6 +9,7 @@ import {
   PageWrapper,
   Header,
   Logo,
+  Logo2,
   Nav,
   NavItem,
   SceneLayout,
@@ -201,6 +202,7 @@ function App() {
       </Header>
       <SceneLayout>
         <LeftPanel>
+        
           <CanvasContainer>
             <Canvas camera={{ position: [0, 0, 7.5] }}>
               <ambientLight intensity={1.8} />
@@ -209,6 +211,7 @@ function App() {
               <OrbitControls />
             </Canvas>
           </CanvasContainer>
+          <Logo2 src="/360Icon.png" alt="Logo" />
         </LeftPanel>
 
         <RightPanel>

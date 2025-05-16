@@ -61,6 +61,12 @@ export const Header = styled.header`
 export const Logo = styled.img`
   height: 32px;
 `;
+export const Logo2 = styled.img`
+  height: 40px;
+  width: 40px;
+  margin-bottom: 420px;
+  margin-right: 30px;
+`;
 
 export const Nav = styled.nav`
   display: flex;
